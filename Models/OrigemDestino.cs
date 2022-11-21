@@ -6,7 +6,6 @@ namespace SoloAdventureAPI.Models
 {
     public class OrigemDestino
     {
-        //public int OrigemDestinoId { get; set; }
         public int PassoOrigemId { get; set; }
         public int PassoDestinoId { get; set; }
 

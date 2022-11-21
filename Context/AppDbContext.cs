@@ -88,16 +88,14 @@ public class AppDbContext : DbContext
 
         modelBuilder.Entity<Passo>()
             .Property(p => p.PassoAtivo)
-                .HasDefaultValue(false)
+                .HasDefaultValue(true)
                 .IsRequired();
-
-        //modelBuilder.Entity<Passo>()
-        //    .Property(p => p.PrimeiroPasso)
-        //        .HasDefaultValue(false)
-        //        .IsRequired();
 
 
         // ----- Configurando Model Idioma -----
+        modelBuilder.Entity<Idioma>()
+            .HasKey(p => p.IdiomaId);
+
         modelBuilder.Entity<Idioma>()
             .ToTable("Idiomas");
 
@@ -108,15 +106,13 @@ public class AppDbContext : DbContext
 
         modelBuilder.Entity<Idioma>()
             .Property(i => i.IdiomaAtivo)
-                .HasDefaultValue(false)
+                .HasDefaultValue(true)
                 .IsRequired();
 
         // ----- Configurando Model OrigemDestino -----
         modelBuilder.Entity<OrigemDestino>()
             .ToTable("OrigensDestinos");
 
-        //modelBuilder.Entity<OrigemDestino>()
-        //    .HasKey(p => p.OrigemDestinoId);
 
         //  ----- Configurando Relação Aventura 1 x N Passos -----
 
@@ -127,9 +123,7 @@ public class AppDbContext : DbContext
 
         //  ----- Configurando Relação N x N OrigemDestino -----
 
-        //modelBuilder.Entity<OrigemDestino>()
-        //    .HasKey(od => new {  od.PassoOrigemId, od.PassoDestinoId });
-
+        // Criando Chave Composta
         modelBuilder.Entity<OrigemDestino>()
             .HasKey(p => new { p.PassoOrigemId, p.PassoDestinoId });
 
@@ -140,16 +134,6 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<OrigemDestino>()
             .HasOne(od => od.PassoDestino)
             .WithMany(od => od.Destinos);
-
-        //modelBuilder.Entity<OrigemDestino>()
-        //    .HasOne(od => od.PassoOrigem)
-        //    .WithMany(od => od.Origens)
-        //    .HasForeignKey(od => od.PassoOrigemId);
-
-        //modelBuilder.Entity<OrigemDestino>()
-        //    .HasOne(od => od.PassoDestino)
-        //    .WithMany(od => od.Destinos)
-        //    .HasForeignKey(od => od.PassoDestinoId);
 
         //  ----- Configurando Relação Aventura 1 x 1 Idioma -----
         modelBuilder.Entity<Idioma>()

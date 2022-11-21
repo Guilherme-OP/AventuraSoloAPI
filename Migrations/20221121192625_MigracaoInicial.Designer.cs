@@ -11,7 +11,7 @@ using SoloAdventureAPI.Context;
 namespace SoloAdventureAPI.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20221116190323_MigracaoInicial")]
+    [Migration("20221121192625_MigracaoInicial")]
     partial class MigracaoInicial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -36,12 +36,12 @@ namespace SoloAdventureAPI.Migrations
                     b.Property<DateTime>("DataAtualizada")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime(6)")
-                        .HasDefaultValue(new DateTime(2022, 11, 16, 16, 3, 23, 393, DateTimeKind.Local).AddTicks(8460));
+                        .HasDefaultValue(new DateTime(2022, 11, 21, 16, 26, 25, 795, DateTimeKind.Local).AddTicks(9270));
 
                     b.Property<DateTime>("DataCadastro")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime(6)")
-                        .HasDefaultValue(new DateTime(2022, 11, 16, 16, 3, 23, 393, DateTimeKind.Local).AddTicks(8330));
+                        .HasDefaultValue(new DateTime(2022, 11, 21, 16, 26, 25, 795, DateTimeKind.Local).AddTicks(9148));
 
                     b.Property<string>("DescricaoRapida")
                         .IsRequired()
@@ -81,7 +81,7 @@ namespace SoloAdventureAPI.Migrations
                     b.Property<bool>("IdiomaAtivo")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("tinyint(1)")
-                        .HasDefaultValue(false);
+                        .HasDefaultValue(true);
 
                     b.Property<string>("Nome")
                         .IsRequired()
@@ -129,7 +129,7 @@ namespace SoloAdventureAPI.Migrations
                     b.Property<bool>("PassoAtivo")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("tinyint(1)")
-                        .HasDefaultValue(false);
+                        .HasDefaultValue(true);
 
                     b.Property<bool>("PrimeiroPasso")
                         .HasColumnType("tinyint(1)");

@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
 namespace SoloAdventureAPI.Models;
@@ -6,6 +7,8 @@ namespace SoloAdventureAPI.Models;
 public class Idioma
 {
     public int IdiomaId { get; set; }
+
+    [StringLength(50)]
     public string? Nome { get; set; }
     public bool IdiomaAtivo { get; set; }
 

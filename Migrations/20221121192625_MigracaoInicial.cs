@@ -21,7 +21,7 @@ namespace SoloAdventureAPI.Migrations
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     Nome = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    IdiomaAtivo = table.Column<bool>(type: "tinyint(1)", nullable: false, defaultValue: false)
+                    IdiomaAtivo = table.Column<bool>(type: "tinyint(1)", nullable: false, defaultValue: true)
                 },
                 constraints: table =>
                 {
@@ -40,8 +40,8 @@ namespace SoloAdventureAPI.Migrations
                     DescricaoRapida = table.Column<string>(type: "varchar(300)", maxLength: 300, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     AventuraAtiva = table.Column<bool>(type: "tinyint(1)", nullable: false, defaultValue: false),
-                    DataCadastro = table.Column<DateTime>(type: "datetime(6)", nullable: false, defaultValue: new DateTime(2022, 11, 16, 16, 3, 23, 393, DateTimeKind.Local).AddTicks(8330)),
-                    DataAtualizada = table.Column<DateTime>(type: "datetime(6)", nullable: false, defaultValue: new DateTime(2022, 11, 16, 16, 3, 23, 393, DateTimeKind.Local).AddTicks(8460)),
+                    DataCadastro = table.Column<DateTime>(type: "datetime(6)", nullable: false, defaultValue: new DateTime(2022, 11, 21, 16, 26, 25, 795, DateTimeKind.Local).AddTicks(9148)),
+                    DataAtualizada = table.Column<DateTime>(type: "datetime(6)", nullable: false, defaultValue: new DateTime(2022, 11, 21, 16, 26, 25, 795, DateTimeKind.Local).AddTicks(9270)),
                     Versao = table.Column<float>(type: "float", nullable: false, defaultValue: 0.01f),
                     ImagemUrl = table.Column<string>(type: "varchar(300)", maxLength: 300, nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
@@ -72,7 +72,7 @@ namespace SoloAdventureAPI.Migrations
                     ImagemUrl = table.Column<string>(type: "varchar(300)", maxLength: 300, nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     PrimeiroPasso = table.Column<bool>(type: "tinyint(1)", nullable: false),
-                    PassoAtivo = table.Column<bool>(type: "tinyint(1)", nullable: false, defaultValue: false),
+                    PassoAtivo = table.Column<bool>(type: "tinyint(1)", nullable: false, defaultValue: true),
                     AventuraId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
