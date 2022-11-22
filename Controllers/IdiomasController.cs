@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using SoloAdventureAPI.Context;
 using SoloAdventureAPI.Models;
+using SoloAdventureAPI.Repository;
 
 namespace SoloAdventureAPI.Controllers;
 
@@ -9,19 +10,19 @@ namespace SoloAdventureAPI.Controllers;
 [ApiController]
 public class IdiomasController : ControllerBase
 {
-    private readonly AppDbContext _context;
+    private readonly IUnitOfWork _uow;
 
-    public IdiomasController(AppDbContext context)
+    public IdiomasController(IUnitOfWork uof)
     {
-        _context = context;
+        _uow = uof;
     }
 
-    [HttpGet("aventuras")]
-    public async Task<ActionResult<IEnumerable<Idioma>>> GetIdiomasAventuras ()
+    [HttpGet("IdiomaAventuras")]
+    public ActionResult<IEnumerable<Idioma>> GetIdiomasAventuras ()
     {
         try
         {
-            var idiomas = await _context.Idiomas.Include(i => i.Aventuras).AsNoTracking().ToListAsync();
+            var idiomas = _uow.IdiomaRepository.GetAventurasPorIdioma().ToList();
 
             if (idiomas is null)
             {
@@ -36,11 +37,11 @@ public class IdiomasController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Idioma>>> Get()
+    public ActionResult<IEnumerable<Idioma>> Get()
     {
         try
         {
-            var idiomas = await _context.Idiomas.AsNoTracking().ToListAsync();
+            var idiomas = _uow.IdiomaRepository.Get().ToList();
             if (idiomas is null)
             {
                 return NotFound("Idioma não encontrado.");
@@ -54,11 +55,11 @@ public class IdiomasController : ControllerBase
     }
 
     [HttpGet("{id:int}", Name="ObterIdioma")]
-    public async Task<ActionResult<Idioma>> Get(int id) 
+    public  ActionResult<Idioma> Get(int id) 
     {
         try
         {
-            var idioma = await _context.Idiomas.FirstOrDefaultAsync(i => i.IdiomaId == id);
+            var idioma = _uow.IdiomaRepository.GetById(i => i.IdiomaId == id);
             if (idioma == null)
             {
                 return NotFound($"Idioma não encontrado. Id = {id}.");
@@ -72,7 +73,7 @@ public class IdiomasController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult> Post(Idioma idioma)
+    public  ActionResult Post(Idioma idioma)
     {
         try
         {
@@ -81,8 +82,8 @@ public class IdiomasController : ControllerBase
                 return BadRequest("Dados inválidos.");
             }
 
-            _context.Idiomas.Add(idioma);
-            await _context.SaveChangesAsync();
+            _uow.IdiomaRepository.Add(idioma);
+            _uow.Commit();
 
             return new CreatedAtRouteResult("ObterIdioma", new { id = idioma.IdiomaId }, idioma);
         }
@@ -93,7 +94,7 @@ public class IdiomasController : ControllerBase
     }
 
     [HttpPut("{id:int}")]
-    public async Task<ActionResult> Put(int id, Idioma idioma)
+    public ActionResult Put(int id, Idioma idioma)
     {
         try
         {
@@ -102,8 +103,8 @@ public class IdiomasController : ControllerBase
                 return NotFound($"Idioma não encontrado. Id = {id}.");
             }
 
-            _context.Entry(idioma).State = EntityState.Modified;
-            await _context.SaveChangesAsync();
+            _uow.IdiomaRepository.Update(idioma);
+            _uow.Commit();
 
             return Ok(idioma);
 
@@ -116,23 +117,19 @@ public class IdiomasController : ControllerBase
     }
 
     [HttpDelete("{id:int}")]
-    public async Task<ActionResult> Delete(int id)
+    public  ActionResult Delete(int id)
     {
         try
         {
-            // Tenta localizar o Id diretamente no banco de dados
-            //var idioma = _context.Idiomas.FirstOrDefault(i => i.IdiomaId == id);
-
-            // Tenta localizar o Id primeiro na memória. É necessário utilizar a chave primária na busca.
-            var idioma = _context.Idiomas.Find(id);
+            var idioma = _uow.IdiomaRepository.GetById(i => i.IdiomaId == id);
 
             if (idioma == null)
             {
                 return BadRequest($"Idioma não encontrado. Id = {id}.");
             }
 
-            _context.Idiomas.Remove(idioma);
-            await _context.SaveChangesAsync();
+            _uow.IdiomaRepository.Delete(idioma);
+            _uow.Commit();
 
             return Ok(idioma);
 

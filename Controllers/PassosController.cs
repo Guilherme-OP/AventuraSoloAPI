@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SoloAdventureAPI.Context;
 using SoloAdventureAPI.Models;
+using SoloAdventureAPI.Repository;
 
 namespace SoloAdventureAPI.Controllers;
 
@@ -10,19 +11,19 @@ namespace SoloAdventureAPI.Controllers;
 [ApiController]
 public class PassosController : ControllerBase
 {
-	private readonly AppDbContext _context;
+	private readonly IUnitOfWork _uow;
 
-	public PassosController(AppDbContext context)
+	public PassosController(IUnitOfWork uow)
 	{
-		_context = context;
+        _uow = uow;
 	}
 
     [HttpGet("destinos")]
-    public async Task<ActionResult<IEnumerable<Passo>>> GetPassosOrigensDestinos()
+    public ActionResult<IEnumerable<Passo>> GetPassosOrigensDestinos()
     {
         try
         {
-            var passos = await _context.Passos.Include(p => p.Origens).AsNoTracking().ToListAsync();
+            var passos = _uow.PassoRepository.GetPassosOrigemDestinos().ToList();
 
             if (passos is null)
             {
@@ -37,11 +38,11 @@ public class PassosController : ControllerBase
     }
 
 	[HttpGet]
-	public async Task<ActionResult<IEnumerable<Passo>>> Get()
+	public ActionResult<IEnumerable<Passo>> Get()
 	{
 		try
 		{
-            var passos = await _context.Passos.AsNoTracking().ToListAsync();
+            var passos = _uow.PassoRepository.Get().ToList();
             if (passos is null)
             {
                 return NotFound("Nenhum passo encontrado.");
@@ -55,11 +56,11 @@ public class PassosController : ControllerBase
 	}
 
 	[HttpGet("{id:int}", Name = "ObterPasso")]
-	public async Task<ActionResult<Passo>> Get(int id) 
+	public ActionResult<Passo> Get(int id) 
 	{
 		try
 		{
-            var passo = await _context.Passos.FirstOrDefaultAsync(p => p.PassoId == id);
+            var passo = _uow.PassoRepository.GetById(p => p.PassoId == id);
 
             if (passo == null)
             {
@@ -75,7 +76,7 @@ public class PassosController : ControllerBase
 	}
 
 	[HttpPost]
-	public async Task<ActionResult> Post(Passo passo)
+	public ActionResult Post(Passo passo)
 	{
 		try
 		{
@@ -84,8 +85,8 @@ public class PassosController : ControllerBase
                 return BadRequest("Dados inválidos.");
             }
 
-            _context.Passos.Add(passo);
-            await _context.SaveChangesAsync();
+            _uow.PassoRepository.Add(passo);
+            _uow.Commit();
 
             return new CreatedAtRouteResult("ObterPasso", new { id = passo.PassoId }, passo);
         }
@@ -96,7 +97,7 @@ public class PassosController : ControllerBase
 	}
 
 	[HttpPut]
-	public async Task<ActionResult> Put(int id, Passo passo) 
+	public ActionResult Put(int id, Passo passo) 
 	{
 		try
 		{
@@ -105,8 +106,8 @@ public class PassosController : ControllerBase
                 return BadRequest($"Dados inválidos. Id = {id}.");
             }
 
-            _context.Entry(passo).State = EntityState.Modified;
-            await _context.SaveChangesAsync();
+            _uow.PassoRepository.Update(passo);
+            _uow.Commit();
 
             return Ok(passo);
 
@@ -119,20 +120,20 @@ public class PassosController : ControllerBase
 	}
 
 	[HttpDelete]
-	public async Task<ActionResult> Delete(int id)
+	public ActionResult Delete(int id)
 	{
 		try
 		{
-            var passo = await _context.Passos.FirstOrDefaultAsync(p => p.PassoId == id);
+            var passo = _uow.PassoRepository.GetById(p => p.PassoId == id);
 
             if (passo == null)
             {
                 return BadRequest($"Passo não encontrada. Id = {id}.");
             }
 
-            _context.Passos.Remove(passo);
+            _uow.PassoRepository.Delete(passo);
+            _uow.Commit();
 
-            _context.SaveChanges();
             return Ok(passo);
 
             //return NoContent();

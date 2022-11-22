@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using SoloAdventureAPI.Context;
 using SoloAdventureAPI.Models;
+using SoloAdventureAPI.Repository;
 
 namespace SoloAdventureAPI.Controllers;
 
@@ -9,22 +10,19 @@ namespace SoloAdventureAPI.Controllers;
 [ApiController]
 public class AventurasController : ControllerBase
 {
-    private readonly AppDbContext _context;
+    private readonly IUnitOfWork _uow;
 
-    public AventurasController(AppDbContext context)
+    public AventurasController(IUnitOfWork uow)
     {
-        _context = context;
+        _uow = uow;
     }
 
     [HttpGet("passos")]
-    public async Task<ActionResult<IEnumerable<Aventura>>> GetAventurasPassos()
+    public ActionResult<IEnumerable<Aventura>> GetAventurasPassos()
     {
         try
         {
-            var aventuras = await _context.Aventuras.Include(p => p.Passos).AsNoTracking().ToListAsync();
-
-            // Exemplo de filtro
-            //var aventuras = _context.Aventuras.Include(p => p.Passo).Where(a => a.AventuraId <= 5).ToList();
+            var aventuras = _uow.AventuraRepository.GetPassosPorAventura().ToList();
 
             if (aventuras is null)
             {
@@ -40,11 +38,11 @@ public class AventurasController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Aventura>>> Get()
+    public ActionResult<IEnumerable<Aventura>> Get()
     {
         try
         {
-            var aventuras = await _context.Aventuras.AsNoTracking().ToListAsync();
+            var aventuras = _uow.AventuraRepository.Get().ToList();
             if (aventuras is null)
             {
                 return NotFound("Nenhuma aventura encontrada.");
@@ -58,11 +56,11 @@ public class AventurasController : ControllerBase
     }
 
     [HttpGet("{id:int}", Name = "ObterAventura")]
-    public async Task<ActionResult<Aventura>> Get(int id)
+    public ActionResult<Aventura> Get(int id)
     {
         try
         {
-            var aventura = await _context.Aventuras.FirstOrDefaultAsync(a => a.AventuraId == id);
+            var aventura = _uow.AventuraRepository.GetById(a => a.AventuraId == id);
 
             if (aventura == null)
             {
@@ -79,7 +77,7 @@ public class AventurasController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult> Post(Aventura aventura)
+    public ActionResult Post(Aventura aventura)
     {
         try
         {
@@ -88,8 +86,8 @@ public class AventurasController : ControllerBase
                 return BadRequest("Dados inválidos.");
             }
 
-            _context.Aventuras.Add(aventura);
-            await _context.SaveChangesAsync();
+            _uow.AventuraRepository.Add(aventura);
+            _uow.Commit();
 
             return new CreatedAtRouteResult("ObterAventura", new { id = aventura.AventuraId }, aventura);
         }
@@ -100,7 +98,7 @@ public class AventurasController : ControllerBase
     }
 
     [HttpPut]
-    public async Task<ActionResult> Put(int id, Aventura aventura)
+    public ActionResult Put(int id, Aventura aventura)
     {
         try
         {
@@ -108,8 +106,10 @@ public class AventurasController : ControllerBase
             {
                 return NotFound($"Dados inválidos.  Id = {id}.");
             }
-            _context.Entry(aventura).State = EntityState.Modified;
-            await _context.SaveChangesAsync();
+
+            _uow.AventuraRepository.Update(aventura);
+            _uow.Commit();
+
             return Ok(aventura);
 
             //return NoContent();
@@ -121,19 +121,20 @@ public class AventurasController : ControllerBase
     }
 
     [HttpDelete]
-    public async Task<ActionResult> Delete(int id)
+    public ActionResult Delete(int id)
     {
         try
         {
-            var aventura = _context.Aventuras.FirstOrDefault(a => a.AventuraId == id);
+            var aventura = _uow.AventuraRepository.GetById(a => a.AventuraId == id);
 
             if (aventura == null)
             {
                 return BadRequest($"Aventura não encontrada. Id = {id}.");
             }
 
-            _context.Aventuras.Remove(aventura);
-            await _context.SaveChangesAsync();
+            _uow.AventuraRepository.Delete(aventura);
+            _uow.Commit();
+
             return Ok(aventura);
 
             //return NoContent();
