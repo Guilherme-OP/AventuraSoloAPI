@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SoloAdventureAPI.Context;
+using SoloAdventureAPI.DTOs;
 using SoloAdventureAPI.Models;
 using SoloAdventureAPI.Repository;
 
@@ -12,14 +14,16 @@ namespace SoloAdventureAPI.Controllers;
 public class PassosController : ControllerBase
 {
 	private readonly IUnitOfWork _uow;
+    private readonly IMapper _mapper;
 
-	public PassosController(IUnitOfWork uow)
+	public PassosController(IUnitOfWork uow, IMapper mapper)
 	{
         _uow = uow;
+        _mapper = mapper;
 	}
 
     [HttpGet("destinos")]
-    public ActionResult<IEnumerable<Passo>> GetPassosOrigensDestinos()
+    public ActionResult<IEnumerable<PassoDTO>> GetPassosOrigensDestinos()
     {
         try
         {
@@ -29,7 +33,10 @@ public class PassosController : ControllerBase
             {
                 return NotFound("Nenhum passo encontrado.");
             }
-            return Ok(passos);
+
+            var passosDTO = _mapper.Map<List<PassoDTO>>(passos);
+
+            return Ok(passosDTO);
         }
         catch (Exception)
         {
@@ -38,15 +45,19 @@ public class PassosController : ControllerBase
     }
 
 	[HttpGet]
-	public ActionResult<IEnumerable<Passo>> Get()
+	public ActionResult<IEnumerable<PassoDTO>> Get()
 	{
 		try
 		{
             var passos = _uow.PassoRepository.Get().ToList();
+
             if (passos is null)
             {
                 return NotFound("Nenhum passo encontrado.");
             }
+
+            var passosDTO = _mapper.Map<List<PassoDTO>>(passos);
+
             return Ok(passos);
         }
 		catch (Exception)
@@ -56,7 +67,7 @@ public class PassosController : ControllerBase
 	}
 
 	[HttpGet("{id:int}", Name = "ObterPasso")]
-	public ActionResult<Passo> Get(int id) 
+	public ActionResult<PassoDTO> Get(int id) 
 	{
 		try
 		{
@@ -67,7 +78,9 @@ public class PassosController : ControllerBase
                 return NotFound($"Passo não encontrado. Id = {id}.");
             }
 
-            return Ok(passo);
+            var passoDTO = _mapper.Map<PassoDTO>(passo);
+
+            return Ok(passoDTO);
         }
 		catch (Exception)
 		{
@@ -76,19 +89,23 @@ public class PassosController : ControllerBase
 	}
 
 	[HttpPost]
-	public ActionResult Post(Passo passo)
+	public ActionResult Post(PassoDTO passoDTO)
 	{
 		try
 		{
-            if (passo == null)
+            if (passoDTO == null)
             {
                 return BadRequest("Dados inválidos.");
             }
 
+            var passo = _mapper.Map<Passo>(passoDTO);
+
             _uow.PassoRepository.Add(passo);
             _uow.Commit();
 
-            return new CreatedAtRouteResult("ObterPasso", new { id = passo.PassoId }, passo);
+            var passoDTORetorno = _mapper.Map<PassoDTO>(passo);
+
+            return new CreatedAtRouteResult("ObterPasso", new { id = passo.PassoId }, passoDTORetorno);
         }
 		catch (Exception)
 		{
@@ -96,20 +113,24 @@ public class PassosController : ControllerBase
         }
 	}
 
-	[HttpPut]
-	public ActionResult Put(int id, Passo passo) 
+	[HttpPut("{id:int}")]
+	public ActionResult Put(int id, PassoDTO passoDTO) 
 	{
 		try
 		{
-            if (id != passo.PassoId)
+            if (id != passoDTO.PassoId)
             {
                 return BadRequest($"Dados inválidos. Id = {id}.");
             }
 
+            var passo = _mapper.Map<Passo>(passoDTO);
+
             _uow.PassoRepository.Update(passo);
             _uow.Commit();
 
-            return Ok(passo);
+            var passoDTORetorno = _mapper.Map<PassoDTO>(passo);
+
+            return Ok(passoDTORetorno);
 
             //return NoContent();
         }
@@ -119,8 +140,8 @@ public class PassosController : ControllerBase
         }
 	}
 
-	[HttpDelete]
-	public ActionResult Delete(int id)
+	[HttpDelete("{id:int}")]
+    public ActionResult<PassoDTO> Delete(int id)
 	{
 		try
 		{
@@ -134,7 +155,9 @@ public class PassosController : ControllerBase
             _uow.PassoRepository.Delete(passo);
             _uow.Commit();
 
-            return Ok(passo);
+            var passoDTO = _mapper.Map<PassoDTO>(passo);
+
+            return Ok(passoDTO);
 
             //return NoContent();
         }

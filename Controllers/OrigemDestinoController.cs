@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SoloAdventureAPI.Context;
+using SoloAdventureAPI.DTOs;
 using SoloAdventureAPI.Models;
 using SoloAdventureAPI.Repository;
 
@@ -12,14 +14,16 @@ namespace SoloAdventureAPI.Controllers;
 public class OrigemDestinoController : ControllerBase
 {
     private readonly IUnitOfWork _uow;
+    private readonly IMapper _mapper;
 
-    public OrigemDestinoController(IUnitOfWork uow)
+    public OrigemDestinoController(IUnitOfWork uow, IMapper mapper)
     {
         _uow = uow;
+        _mapper = mapper;
     }
 
     [HttpGet("Destinos")]
-    public ActionResult<IEnumerable<OrigemDestino>> GetDestinos ()
+    public ActionResult<IEnumerable<OrigemDestinoDTO>> GetDestinos ()
     {
         try
         {
@@ -29,7 +33,10 @@ public class OrigemDestinoController : ControllerBase
             {
                 return NotFound("Nenhum destino encontrado");
             }
-            return Ok(origemDestino);
+
+            var origemDestinoDTO = _mapper.Map<List<OrigemDestinoDTO>>(origemDestino);
+
+            return Ok(origemDestinoDTO);
         }
         catch (Exception)
         {
@@ -38,16 +45,20 @@ public class OrigemDestinoController : ControllerBase
     }
 
     [HttpGet]
-    public ActionResult<IEnumerable<OrigemDestino>> Get()
+    public ActionResult<IEnumerable<OrigemDestinoDTO>> Get()
     {
         try
         {
             var origemDestino = _uow.OrigemDestinoRepository.Get().ToList();
+
             if (origemDestino is null)
             {
                 return NotFound("Nenhum caminho encontrado.");
             }
-            return Ok(origemDestino);
+
+            var origemDestinoDTO = _mapper.Map<List<OrigemDestinoDTO>>(origemDestino);
+
+            return Ok(origemDestinoDTO);
         }
         catch (Exception)
         {
@@ -56,16 +67,20 @@ public class OrigemDestinoController : ControllerBase
     }
 
     [HttpGet("{origemId:int}, {destinoId:int}", Name = "ObterOrigemDestino")]
-    public ActionResult<OrigemDestino> Get(int origemId, int destinoId)
+    public ActionResult<OrigemDestinoDTO> Get(int origemId, int destinoId)
     {
         try
         {
             var origemDestino = _uow.OrigemDestinoRepository.GetById(od => od.PassoOrigemId == origemId && od.PassoDestinoId == destinoId);
+
             if (origemDestino == null)
             {
                 return NotFound($"Caminho não encontrado. Origem Id = {origemId} | Destino Id = {destinoId}.");
             }
-            return Ok(origemDestino);
+
+            var origemDestinoDTO = _mapper.Map<OrigemDestinoDTO>(origemDestino);
+
+            return Ok(origemDestinoDTO);
         }
         catch (Exception)
         {
@@ -74,19 +89,23 @@ public class OrigemDestinoController : ControllerBase
     }
 
     [HttpPost]
-    public ActionResult Post(OrigemDestino origemDestino)
+    public ActionResult Post(OrigemDestinoDTO origemDestinoDTO)
     {
         try
         {
-            if (origemDestino == null)
+            if (origemDestinoDTO == null)
             {
                 return BadRequest("Dados inválidos.");
             }
 
+            var origemDestino = _mapper.Map<OrigemDestino>(origemDestinoDTO);
+
             _uow.OrigemDestinoRepository.Add(origemDestino);
             _uow.Commit();
 
-            return new CreatedAtRouteResult("ObterOrigemDestino", new { origemId = origemDestino.PassoOrigemId, destinoId = origemDestino.PassoDestinoId }, origemDestino);
+            var origemDestinoDTORetorno = _mapper.Map<OrigemDestinoDTO>(origemDestino);
+
+            return new CreatedAtRouteResult("ObterOrigemDestino", new { origemId = origemDestino.PassoOrigemId, destinoId = origemDestino.PassoDestinoId }, origemDestinoDTORetorno);
         }
         catch (Exception)
         {
@@ -108,7 +127,10 @@ public class OrigemDestinoController : ControllerBase
 
             _uow.OrigemDestinoRepository.Delete(origemDestino);
             _uow.Commit();
-            return Ok(origemDestino);
+
+            var origemDestinoDTO = _mapper.Map<OrigemDestinoDTO>(origemDestino);
+
+            return Ok(origemDestinoDTO);
 
             //return NoContent();
         }

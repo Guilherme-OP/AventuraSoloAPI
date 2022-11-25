@@ -1,6 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using SoloAdventureAPI.Context;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
+using SoloAdventureAPI.DTO;
 using SoloAdventureAPI.Models;
 using SoloAdventureAPI.Repository;
 
@@ -11,14 +11,16 @@ namespace SoloAdventureAPI.Controllers;
 public class AventurasController : ControllerBase
 {
     private readonly IUnitOfWork _uow;
+    private readonly IMapper _mapper;
 
-    public AventurasController(IUnitOfWork uow)
+    public AventurasController(IUnitOfWork uow, IMapper mapper)
     {
         _uow = uow;
+        _mapper = mapper;
     }
 
     [HttpGet("passos")]
-    public ActionResult<IEnumerable<Aventura>> GetAventurasPassos()
+    public ActionResult<IEnumerable<AventuraDTO>> GetAventurasPassos()
     {
         try
         {
@@ -28,7 +30,10 @@ public class AventurasController : ControllerBase
             {
                 return NotFound("Nenhuma aventura encontrada.");
             }
-            return Ok(aventuras);
+
+            var aventurasDTO = _mapper.Map<List<AventuraDTO>>(aventuras);
+
+            return Ok(aventurasDTO);
         }
         catch (Exception)
         {
@@ -38,16 +43,20 @@ public class AventurasController : ControllerBase
     }
 
     [HttpGet]
-    public ActionResult<IEnumerable<Aventura>> Get()
+    public ActionResult<IEnumerable<AventuraDTO>> Get()
     {
         try
         {
             var aventuras = _uow.AventuraRepository.Get().ToList();
+
             if (aventuras is null)
             {
                 return NotFound("Nenhuma aventura encontrada.");
             }
-            return Ok(aventuras);
+
+            var aventurasDTO = _mapper.Map<List<AventuraDTO>>(aventuras);
+
+            return Ok(aventurasDTO);
         }
         catch (Exception)
         {
@@ -56,7 +65,7 @@ public class AventurasController : ControllerBase
     }
 
     [HttpGet("{id:int}", Name = "ObterAventura")]
-    public ActionResult<Aventura> Get(int id)
+    public ActionResult<AventuraDTO> Get(int id)
     {
         try
         {
@@ -66,30 +75,37 @@ public class AventurasController : ControllerBase
             {
                 return NotFound($"Aventura não encontrada. Id = {id}.");
             }
-            return Ok(aventura);
+
+            var aventuraDTO = _mapper.Map<AventuraDTO>(aventura);
+
+            return Ok(aventuraDTO);
         }
         catch (Exception)
         {
             return StatusCode(StatusCodes.Status500InternalServerError, "Ocorreu um problema ao tratar a sua solicitação.");
         }
 
-       
+
     }
 
     [HttpPost]
-    public ActionResult Post(Aventura aventura)
+    public ActionResult Post(AventuraDTO aventuraDTO)
     {
         try
         {
-            if (aventura == null)
+            if (aventuraDTO == null)
             {
                 return BadRequest("Dados inválidos.");
             }
 
+            var aventura = _mapper.Map<Aventura>(aventuraDTO);
+
             _uow.AventuraRepository.Add(aventura);
             _uow.Commit();
 
-            return new CreatedAtRouteResult("ObterAventura", new { id = aventura.AventuraId }, aventura);
+            var aventuraDTORetorno = _mapper.Map<AventuraDTO>(aventura);
+
+            return new CreatedAtRouteResult("ObterAventura", new { id = aventura.AventuraId }, aventuraDTORetorno);
         }
         catch (Exception)
         {
@@ -97,31 +113,35 @@ public class AventurasController : ControllerBase
         }
     }
 
-    [HttpPut]
-    public ActionResult Put(int id, Aventura aventura)
+    [HttpPut("{id:int}")]
+    public ActionResult Put(int id, AventuraDTO aventuraDTO)
     {
         try
         {
-            if (id != aventura.AventuraId)
+            if (id != aventuraDTO.AventuraId)
             {
                 return NotFound($"Dados inválidos.  Id = {id}.");
             }
 
+            var aventura = _mapper.Map<Aventura>(aventuraDTO);
+
             _uow.AventuraRepository.Update(aventura);
             _uow.Commit();
 
-            return Ok(aventura);
+            var aventuraDTORetorno = _mapper.Map<AventuraDTO>(aventura);
+
+            return Ok(aventuraDTORetorno);
 
             //return NoContent();
         }
         catch (Exception)
         {
             return StatusCode(StatusCodes.Status500InternalServerError, "Ocorreu um problema ao tratar a sua solicitação.");
-        } 
+        }
     }
 
-    [HttpDelete]
-    public ActionResult Delete(int id)
+    [HttpDelete("{id:int}")]
+    public ActionResult<AventuraDTO> Delete(int id)
     {
         try
         {
@@ -135,7 +155,9 @@ public class AventurasController : ControllerBase
             _uow.AventuraRepository.Delete(aventura);
             _uow.Commit();
 
-            return Ok(aventura);
+            var aventuraDTO = _mapper.Map<AventuraDTO>(aventura);
+
+            return Ok(aventuraDTO);
 
             //return NoContent();
         }

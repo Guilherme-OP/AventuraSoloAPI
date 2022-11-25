@@ -1,6 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using SoloAdventureAPI.Context;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
+using SoloAdventureAPI.DTOs;
 using SoloAdventureAPI.Models;
 using SoloAdventureAPI.Repository;
 
@@ -11,14 +11,16 @@ namespace SoloAdventureAPI.Controllers;
 public class IdiomasController : ControllerBase
 {
     private readonly IUnitOfWork _uow;
+    private readonly IMapper _mapper;
 
-    public IdiomasController(IUnitOfWork uof)
+    public IdiomasController(IUnitOfWork uow, IMapper mapper)
     {
-        _uow = uof;
+        _uow = uow;
+        _mapper = mapper;
     }
 
     [HttpGet("IdiomaAventuras")]
-    public ActionResult<IEnumerable<Idioma>> GetIdiomasAventuras ()
+    public ActionResult<IEnumerable<IdiomaDTO>> GetIdiomasAventuras()
     {
         try
         {
@@ -28,7 +30,10 @@ public class IdiomasController : ControllerBase
             {
                 return NotFound("Nenhum idioma encontrado");
             }
-            return Ok(idiomas);
+
+            var idiomasDTO = _mapper.Map<List<IdiomaDTO>>(idiomas);
+
+            return Ok(idiomasDTO);
         }
         catch (Exception)
         {
@@ -37,34 +42,42 @@ public class IdiomasController : ControllerBase
     }
 
     [HttpGet]
-    public ActionResult<IEnumerable<Idioma>> Get()
+    public ActionResult<IEnumerable<IdiomaDTO>> Get()
     {
         try
         {
             var idiomas = _uow.IdiomaRepository.Get().ToList();
+
             if (idiomas is null)
             {
                 return NotFound("Idioma não encontrado.");
             }
-            return Ok(idiomas);
+
+            var idiomasGetDTO = _mapper.Map<List<IdiomaDTO>>(idiomas);
+
+            return Ok(idiomasGetDTO);
         }
         catch (Exception)
         {
             return StatusCode(StatusCodes.Status500InternalServerError, "Ocorreu um problema ao tratar a sua solicitação.");
-        } 
+        }
     }
 
-    [HttpGet("{id:int}", Name="ObterIdioma")]
-    public  ActionResult<Idioma> Get(int id) 
+    [HttpGet("{id:int}", Name = "ObterIdioma")]
+    public ActionResult<IdiomaDTO> Get(int id)
     {
         try
         {
             var idioma = _uow.IdiomaRepository.GetById(i => i.IdiomaId == id);
+
             if (idioma == null)
             {
                 return NotFound($"Idioma não encontrado. Id = {id}.");
             }
-            return Ok(idioma);
+
+            var idiomaDTO = _mapper.Map<IdiomaDTO>(idioma);
+
+            return Ok(idiomaDTO);
         }
         catch (Exception)
         {
@@ -73,19 +86,23 @@ public class IdiomasController : ControllerBase
     }
 
     [HttpPost]
-    public  ActionResult Post(Idioma idioma)
+    public ActionResult Post(IdiomaDTO idiomaDTO)
     {
         try
         {
-            if (idioma == null)
+            if (idiomaDTO == null)
             {
                 return BadRequest("Dados inválidos.");
             }
 
+            var idioma = _mapper.Map<Idioma>(idiomaDTO);
+
             _uow.IdiomaRepository.Add(idioma);
             _uow.Commit();
 
-            return new CreatedAtRouteResult("ObterIdioma", new { id = idioma.IdiomaId }, idioma);
+            var idiomaDTORetorno = _mapper.Map<IdiomaDTO>(idioma);
+
+            return new CreatedAtRouteResult("ObterIdioma", new { id = idioma.IdiomaId }, idiomaDTORetorno);
         }
         catch (Exception)
         {
@@ -94,19 +111,23 @@ public class IdiomasController : ControllerBase
     }
 
     [HttpPut("{id:int}")]
-    public ActionResult Put(int id, Idioma idioma)
+    public ActionResult Put(int id, IdiomaDTO idiomaDTO)
     {
         try
         {
-            if (id != idioma.IdiomaId)
+            if (id != idiomaDTO.IdiomaId)
             {
                 return NotFound($"Idioma não encontrado. Id = {id}.");
             }
 
+            var idioma = _mapper.Map<Idioma>(idiomaDTO);
+
             _uow.IdiomaRepository.Update(idioma);
             _uow.Commit();
 
-            return Ok(idioma);
+            var idiomaDTORetorno = _mapper.Map<IdiomaDTO>(idioma);
+
+            return Ok(idiomaDTORetorno);
 
             //return NoContent();
         }
@@ -117,7 +138,7 @@ public class IdiomasController : ControllerBase
     }
 
     [HttpDelete("{id:int}")]
-    public  ActionResult Delete(int id)
+    public ActionResult Delete(int id)
     {
         try
         {
@@ -131,7 +152,9 @@ public class IdiomasController : ControllerBase
             _uow.IdiomaRepository.Delete(idioma);
             _uow.Commit();
 
-            return Ok(idioma);
+            var idiomaDTO = _mapper.Map<IdiomaDTO>(idioma);
+
+            return Ok(idiomaDTO);
 
             //return NoContent();
         }
