@@ -43,16 +43,6 @@ public class AppDbContext : DbContext
                 .IsRequired();
 
         modelBuilder.Entity<Aventura>()
-            .Property(a => a.DataAtualizada)
-                .HasDefaultValue(DateTime.Now)
-                .IsRequired();
-
-        modelBuilder.Entity<Aventura>()
-            .Property(a => a.Versao)
-                .HasDefaultValue(0.01)
-                .IsRequired();
-
-        modelBuilder.Entity<Aventura>()
             .Property(a => a.ImagemUrl)
                 .HasMaxLength(300);
 

@@ -20,10 +20,6 @@ public class Aventura
 
     public DateTime DataCadastro { get; set; } = DateTime.Now;
 
-    public DateTime DataAtualizada { get; set; } = new DateTime();
-
-    public float Versao { get; set; }
-
     [StringLength(300)]
     public string? ImagemUrl { get; set; }
 
