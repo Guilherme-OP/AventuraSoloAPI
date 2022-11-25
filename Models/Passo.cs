@@ -14,10 +14,7 @@ public class Passo
     [StringLength(3000)]
     public string Texto { get; set; } = null!;
 
-    [StringLength(300)]
-    public string? ImagemUrl { get; set; }
-
-    public bool PrimeiroPasso { get; set; }
+    public bool Inicio { get; set; }
 
     public bool PassoAtivo { get; set; }
 

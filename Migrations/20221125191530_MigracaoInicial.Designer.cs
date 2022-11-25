@@ -11,7 +11,7 @@ using SoloAdventureAPI.Context;
 namespace SoloAdventureAPI.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20221121192625_MigracaoInicial")]
+    [Migration("20221125191530_MigracaoInicial")]
     partial class MigracaoInicial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -33,25 +33,13 @@ namespace SoloAdventureAPI.Migrations
                         .HasColumnType("tinyint(1)")
                         .HasDefaultValue(false);
 
-                    b.Property<DateTime>("DataAtualizada")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime(6)")
-                        .HasDefaultValue(new DateTime(2022, 11, 21, 16, 26, 25, 795, DateTimeKind.Local).AddTicks(9270));
-
                     b.Property<DateTime>("DataCadastro")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime(6)")
-                        .HasDefaultValue(new DateTime(2022, 11, 21, 16, 26, 25, 795, DateTimeKind.Local).AddTicks(9148));
+                        .HasDefaultValue(new DateTime(2022, 11, 25, 16, 15, 30, 231, DateTimeKind.Local).AddTicks(8530));
 
-                    b.Property<string>("DescricaoRapida")
+                    b.Property<string>("Descricao")
                         .IsRequired()
-                        .HasMaxLength(300)
-                        .HasColumnType("varchar(300)");
-
-                    b.Property<int>("IdiomaId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("ImagemUrl")
                         .HasMaxLength(300)
                         .HasColumnType("varchar(300)");
 
@@ -60,37 +48,9 @@ namespace SoloAdventureAPI.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("varchar(100)");
 
-                    b.Property<float>("Versao")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("float")
-                        .HasDefaultValue(0.01f);
-
                     b.HasKey("AventuraId");
 
-                    b.HasIndex("IdiomaId");
-
                     b.ToTable("Aventuras", (string)null);
-                });
-
-            modelBuilder.Entity("SoloAdventureAPI.Models.Idioma", b =>
-                {
-                    b.Property<int>("IdiomaId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    b.Property<bool>("IdiomaAtivo")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("tinyint(1)")
-                        .HasDefaultValue(true);
-
-                    b.Property<string>("Nome")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("varchar(100)");
-
-                    b.HasKey("IdiomaId");
-
-                    b.ToTable("Idiomas", (string)null);
                 });
 
             modelBuilder.Entity("SoloAdventureAPI.Models.OrigemDestino", b =>
@@ -117,9 +77,8 @@ namespace SoloAdventureAPI.Migrations
                     b.Property<int>("AventuraId")
                         .HasColumnType("int");
 
-                    b.Property<string>("ImagemUrl")
-                        .HasMaxLength(300)
-                        .HasColumnType("varchar(300)");
+                    b.Property<bool>("Inicio")
+                        .HasColumnType("tinyint(1)");
 
                     b.Property<string>("Nome")
                         .IsRequired()
@@ -131,9 +90,6 @@ namespace SoloAdventureAPI.Migrations
                         .HasColumnType("tinyint(1)")
                         .HasDefaultValue(true);
 
-                    b.Property<bool>("PrimeiroPasso")
-                        .HasColumnType("tinyint(1)");
-
                     b.Property<string>("Texto")
                         .IsRequired()
                         .HasMaxLength(3000)
@@ -144,17 +100,6 @@ namespace SoloAdventureAPI.Migrations
                     b.HasIndex("AventuraId");
 
                     b.ToTable("Passos", (string)null);
-                });
-
-            modelBuilder.Entity("SoloAdventureAPI.Models.Aventura", b =>
-                {
-                    b.HasOne("SoloAdventureAPI.Models.Idioma", "Idioma")
-                        .WithMany("Aventuras")
-                        .HasForeignKey("IdiomaId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Idioma");
                 });
 
             modelBuilder.Entity("SoloAdventureAPI.Models.OrigemDestino", b =>
@@ -190,11 +135,6 @@ namespace SoloAdventureAPI.Migrations
             modelBuilder.Entity("SoloAdventureAPI.Models.Aventura", b =>
                 {
                     b.Navigation("Passos");
-                });
-
-            modelBuilder.Entity("SoloAdventureAPI.Models.Idioma", b =>
-                {
-                    b.Navigation("Aventuras");
                 });
 
             modelBuilder.Entity("SoloAdventureAPI.Models.Passo", b =>

@@ -10,7 +10,6 @@ public class AppDbContext : DbContext
     public DbSet<Aventura> Aventuras { get; set; }
     public DbSet<Passo> Passos { get; set; }
     public DbSet<OrigemDestino> PassosProximosPassos { get; set; }
-    public DbSet<Idioma> Idiomas { get; internal set; }
     public DbSet<OrigemDestino> OrigensDestinos { get; internal set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -28,7 +27,7 @@ public class AppDbContext : DbContext
                 .IsRequired();
 
         modelBuilder.Entity<Aventura>()
-            .Property(a => a.DescricaoRapida)
+            .Property(a => a.Descricao)
                 .HasMaxLength(300)
                 .IsRequired();
 
@@ -40,14 +39,6 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<Aventura>()
             .Property(a => a.DataCadastro)
                 .HasDefaultValue(DateTime.Now)
-                .IsRequired();
-
-        modelBuilder.Entity<Aventura>()
-            .Property(a => a.ImagemUrl)
-                .HasMaxLength(300);
-
-        modelBuilder.Entity<Aventura>()
-            .Property(a => a.IdiomaId)
                 .IsRequired();
 
 
@@ -68,12 +59,8 @@ public class AppDbContext : DbContext
                 .HasMaxLength(3000)
                 .IsRequired();
 
-        modelBuilder.Entity<Aventura>()
-            .Property(a => a.ImagemUrl)
-                .HasMaxLength(300);
-
         modelBuilder.Entity<Passo>()
-            .Property(p => p.PrimeiroPasso)
+            .Property(p => p.Inicio)
                 .IsRequired();
 
         modelBuilder.Entity<Passo>()
@@ -81,23 +68,6 @@ public class AppDbContext : DbContext
                 .HasDefaultValue(true)
                 .IsRequired();
 
-
-        // ----- Configurando Model Idioma -----
-        modelBuilder.Entity<Idioma>()
-            .HasKey(p => p.IdiomaId);
-
-        modelBuilder.Entity<Idioma>()
-            .ToTable("Idiomas");
-
-        modelBuilder.Entity<Idioma>()
-            .Property(i => i.Nome)
-                .HasMaxLength(100)
-                .IsRequired();
-
-        modelBuilder.Entity<Idioma>()
-            .Property(i => i.IdiomaAtivo)
-                .HasDefaultValue(true)
-                .IsRequired();
 
         // ----- Configurando Model OrigemDestino -----
         modelBuilder.Entity<OrigemDestino>()
@@ -124,10 +94,5 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<OrigemDestino>()
             .HasOne(od => od.PassoDestino)
             .WithMany(od => od.Destinos);
-
-        //  ----- Configurando Relação Aventura 1 x 1 Idioma -----
-        modelBuilder.Entity<Idioma>()
-            .HasMany(i => i.Aventuras)
-            .WithOne(a => a.Idioma);
     }
 }

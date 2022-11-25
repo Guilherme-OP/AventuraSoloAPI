@@ -8,7 +8,6 @@ public class MappingProfile : Profile
 {
     public MappingProfile()
     {
-        CreateMap<Idioma, IdiomaDTO>().ReverseMap();
         CreateMap<Aventura, AventuraDTO>().ReverseMap();
         CreateMap<Passo, PassoDTO>().ReverseMap();
         CreateMap<OrigemDestino, OrigemDestinoDTO>().ReverseMap();

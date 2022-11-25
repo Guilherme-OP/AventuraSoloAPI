@@ -4,7 +4,6 @@ namespace SoloAdventureAPI.Repository;
 
 public class UnitOfWork : IUnitOfWork
 {
-    private IdiomaRepository _idiomaRepository;
     private AventuraRepository _aventuraRepository;
     private PassoRepository _passoRepository;
     private OrigemDestinoRepository _origemDestinoRepository;
@@ -13,11 +12,6 @@ public class UnitOfWork : IUnitOfWork
     public UnitOfWork(AppDbContext context)
     {
         _context = context;
-    }
-
-    public IIdiomaRepository IdiomaRepository
-    {
-        get { return _idiomaRepository = _idiomaRepository ?? new IdiomaRepository(_context); }
     }
 
     public IAventuraRepository AventuraRepository

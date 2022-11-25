@@ -14,22 +14,6 @@ namespace SoloAdventureAPI.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "Idiomas",
-                columns: table => new
-                {
-                    IdiomaId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    Nome = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    IdiomaAtivo = table.Column<bool>(type: "tinyint(1)", nullable: false, defaultValue: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Idiomas", x => x.IdiomaId);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
-
-            migrationBuilder.CreateTable(
                 name: "Aventuras",
                 columns: table => new
                 {
@@ -37,25 +21,14 @@ namespace SoloAdventureAPI.Migrations
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     Titulo = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    DescricaoRapida = table.Column<string>(type: "varchar(300)", maxLength: 300, nullable: false)
+                    Descricao = table.Column<string>(type: "varchar(300)", maxLength: 300, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     AventuraAtiva = table.Column<bool>(type: "tinyint(1)", nullable: false, defaultValue: false),
-                    DataCadastro = table.Column<DateTime>(type: "datetime(6)", nullable: false, defaultValue: new DateTime(2022, 11, 21, 16, 26, 25, 795, DateTimeKind.Local).AddTicks(9148)),
-                    DataAtualizada = table.Column<DateTime>(type: "datetime(6)", nullable: false, defaultValue: new DateTime(2022, 11, 21, 16, 26, 25, 795, DateTimeKind.Local).AddTicks(9270)),
-                    Versao = table.Column<float>(type: "float", nullable: false, defaultValue: 0.01f),
-                    ImagemUrl = table.Column<string>(type: "varchar(300)", maxLength: 300, nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    IdiomaId = table.Column<int>(type: "int", nullable: false)
+                    DataCadastro = table.Column<DateTime>(type: "datetime(6)", nullable: false, defaultValue: new DateTime(2022, 11, 25, 16, 15, 30, 231, DateTimeKind.Local).AddTicks(8530))
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Aventuras", x => x.AventuraId);
-                    table.ForeignKey(
-                        name: "FK_Aventuras_Idiomas_IdiomaId",
-                        column: x => x.IdiomaId,
-                        principalTable: "Idiomas",
-                        principalColumn: "IdiomaId",
-                        onDelete: ReferentialAction.Cascade);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -69,9 +42,7 @@ namespace SoloAdventureAPI.Migrations
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Texto = table.Column<string>(type: "varchar(3000)", maxLength: 3000, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    ImagemUrl = table.Column<string>(type: "varchar(300)", maxLength: 300, nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    PrimeiroPasso = table.Column<bool>(type: "tinyint(1)", nullable: false),
+                    Inicio = table.Column<bool>(type: "tinyint(1)", nullable: false),
                     PassoAtivo = table.Column<bool>(type: "tinyint(1)", nullable: false, defaultValue: true),
                     AventuraId = table.Column<int>(type: "int", nullable: false)
                 },
@@ -113,11 +84,6 @@ namespace SoloAdventureAPI.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Aventuras_IdiomaId",
-                table: "Aventuras",
-                column: "IdiomaId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_OrigensDestinos_PassoDestinoId",
                 table: "OrigensDestinos",
                 column: "PassoDestinoId");
@@ -138,9 +104,6 @@ namespace SoloAdventureAPI.Migrations
 
             migrationBuilder.DropTable(
                 name: "Aventuras");
-
-            migrationBuilder.DropTable(
-                name: "Idiomas");
         }
     }
 }

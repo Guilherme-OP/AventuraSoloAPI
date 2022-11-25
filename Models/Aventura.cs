@@ -14,22 +14,15 @@ public class Aventura
     public string Titulo { get; set; } = null!;
 
     [StringLength(300)]
-    public string DescricaoRapida { get; set; } = null!;
+    public string Descricao { get; set; } = null!;
 
     public bool? AventuraAtiva { get; set; }
 
     public DateTime DataCadastro { get; set; } = DateTime.Now;
 
-    [StringLength(300)]
-    public string? ImagemUrl { get; set; }
 
     // ------------- Propriedades de Navegação -------------
-    public int IdiomaId { get; set; }
 
     // Relacionamento Aventura 1 x N Passos
     public ICollection<Passo>? Passos { get; set; }
-
-    // Relacionamento Aventura 1 x 1 Idioma
-    [JsonIgnore]
-    public Idioma? Idioma { get; set; }
 }
