@@ -4,5 +4,5 @@ namespace SoloAdventureAPI.Repository;
 
 public interface IAventuraRepository : IRepository<Aventura>
 {
-    IEnumerable<Aventura> GetPassosPorAventura();
+    Task<IEnumerable<Aventura>> GetPassosPorAventura();
 }

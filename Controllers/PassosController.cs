@@ -23,11 +23,11 @@ public class PassosController : ControllerBase
 	}
 
     [HttpGet("destinos")]
-    public ActionResult<IEnumerable<PassoDTO>> GetPassosOrigensDestinos()
+    public async Task<ActionResult<IEnumerable<PassoDTO>>> GetPassosOrigensDestinos()
     {
         try
         {
-            var passos = _uow.PassoRepository.GetPassosOrigemDestinos().ToList();
+            var passos = await _uow.PassoRepository.GetPassosOrigemDestinos();
 
             if (passos is null)
             {
@@ -45,11 +45,11 @@ public class PassosController : ControllerBase
     }
 
 	[HttpGet]
-	public ActionResult<IEnumerable<PassoDTO>> Get()
+	public async Task<ActionResult<IEnumerable<PassoDTO>>> Get()
 	{
 		try
 		{
-            var passos = _uow.PassoRepository.Get().ToList();
+            var passos = await _uow.PassoRepository.Get().ToListAsync();
 
             if (passos is null)
             {
@@ -67,11 +67,11 @@ public class PassosController : ControllerBase
 	}
 
 	[HttpGet("{id:int}", Name = "ObterPasso")]
-	public ActionResult<PassoDTO> Get(int id) 
+	public async Task<ActionResult<PassoDTO>> Get(int id) 
 	{
 		try
 		{
-            var passo = _uow.PassoRepository.GetById(p => p.PassoId == id);
+            var passo = await _uow.PassoRepository.GetById(p => p.PassoId == id);
 
             if (passo == null)
             {
@@ -89,7 +89,7 @@ public class PassosController : ControllerBase
 	}
 
 	[HttpPost]
-	public ActionResult Post(PassoDTO passoDTO)
+	public async Task<ActionResult> Post(PassoDTO passoDTO)
 	{
 		try
 		{
@@ -101,7 +101,7 @@ public class PassosController : ControllerBase
             var passo = _mapper.Map<Passo>(passoDTO);
 
             _uow.PassoRepository.Add(passo);
-            _uow.Commit();
+            await _uow.Commit();
 
             var passoDTORetorno = _mapper.Map<PassoDTO>(passo);
 
@@ -114,7 +114,7 @@ public class PassosController : ControllerBase
 	}
 
 	[HttpPut("{id:int}")]
-	public ActionResult Put(int id, PassoDTO passoDTO) 
+	public async Task<ActionResult> Put(int id, PassoDTO passoDTO) 
 	{
 		try
 		{
@@ -126,7 +126,7 @@ public class PassosController : ControllerBase
             var passo = _mapper.Map<Passo>(passoDTO);
 
             _uow.PassoRepository.Update(passo);
-            _uow.Commit();
+            await _uow.Commit();
 
             var passoDTORetorno = _mapper.Map<PassoDTO>(passo);
 
@@ -141,11 +141,11 @@ public class PassosController : ControllerBase
 	}
 
 	[HttpDelete("{id:int}")]
-    public ActionResult<PassoDTO> Delete(int id)
+    public async Task<ActionResult<PassoDTO>> Delete(int id)
 	{
 		try
 		{
-            var passo = _uow.PassoRepository.GetById(p => p.PassoId == id);
+            var passo = await _uow.PassoRepository.GetById(p => p.PassoId == id);
 
             if (passo == null)
             {
@@ -153,7 +153,7 @@ public class PassosController : ControllerBase
             }
 
             _uow.PassoRepository.Delete(passo);
-            _uow.Commit();
+            await _uow.Commit();
 
             var passoDTO = _mapper.Map<PassoDTO>(passo);
 

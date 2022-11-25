@@ -8,8 +8,8 @@ public class AventuraRepository : Repository<Aventura>, IAventuraRepository
 {
     public AventuraRepository(AppDbContext context) : base(context) { }
 
-    public IEnumerable<Aventura> GetPassosPorAventura()
+    public async Task<IEnumerable<Aventura>> GetPassosPorAventura()
     {
-        return Get().Include(a => a.Passos);
+        return await Get().Include(a => a.Passos).ToListAsync();
     }
 }

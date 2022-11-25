@@ -10,8 +10,8 @@ public class OrigemDestinoRepository : Repository<OrigemDestino>, IOrigemDestino
     {
     }
 
-    public IEnumerable<OrigemDestino> GetDestinos()
+    public async Task<IEnumerable<OrigemDestino>> GetDestinos()
     {
-        return Get().Include(od => od.PassoDestino);
+        return await Get().Include(od => od.PassoDestino).ToListAsync();
     }
 }

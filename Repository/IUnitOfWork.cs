@@ -7,5 +7,5 @@ public interface IUnitOfWork
     IPassoRepository PassoRepository { get; }
     IOrigemDestinoRepository OrigemDestinoRepository { get; }
 
-    void Commit();
+    Task Commit();
 }

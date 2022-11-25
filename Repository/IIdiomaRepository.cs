@@ -4,5 +4,5 @@ namespace SoloAdventureAPI.Repository;
 
 public interface IIdiomaRepository : IRepository<Idioma>
 {
-    IEnumerable<Idioma> GetAventurasPorIdioma();
+    Task<IEnumerable<Idioma>> GetAventurasPorIdioma();
 }

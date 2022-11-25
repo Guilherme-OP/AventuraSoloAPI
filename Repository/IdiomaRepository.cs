@@ -10,8 +10,8 @@ public class IdiomaRepository : Repository<Idioma>, IIdiomaRepository
     {
     }
 
-    public IEnumerable<Idioma> GetAventurasPorIdioma()
+    public async Task<IEnumerable<Idioma>> GetAventurasPorIdioma()
     {
-        return Get().Include(i => i.Aventuras);
+        return await Get().Include(i => i.Aventuras).ToListAsync();
     }
 }

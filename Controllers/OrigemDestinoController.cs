@@ -23,11 +23,11 @@ public class OrigemDestinoController : ControllerBase
     }
 
     [HttpGet("Destinos")]
-    public ActionResult<IEnumerable<OrigemDestinoDTO>> GetDestinos ()
+    public async Task<ActionResult<IEnumerable<OrigemDestinoDTO>>> GetDestinos ()
     {
         try
         {
-            var origemDestino = _uow.OrigemDestinoRepository.GetDestinos().ToList();
+            var origemDestino = await _uow.OrigemDestinoRepository.GetDestinos();
 
             if (origemDestino == null)
             {
@@ -45,11 +45,11 @@ public class OrigemDestinoController : ControllerBase
     }
 
     [HttpGet]
-    public ActionResult<IEnumerable<OrigemDestinoDTO>> Get()
+    public async Task<ActionResult<IEnumerable<OrigemDestinoDTO>>> Get()
     {
         try
         {
-            var origemDestino = _uow.OrigemDestinoRepository.Get().ToList();
+            var origemDestino = await _uow.OrigemDestinoRepository.Get().ToListAsync();
 
             if (origemDestino is null)
             {
@@ -67,11 +67,11 @@ public class OrigemDestinoController : ControllerBase
     }
 
     [HttpGet("{origemId:int}, {destinoId:int}", Name = "ObterOrigemDestino")]
-    public ActionResult<OrigemDestinoDTO> Get(int origemId, int destinoId)
+    public async Task<ActionResult<OrigemDestinoDTO>> Get(int origemId, int destinoId)
     {
         try
         {
-            var origemDestino = _uow.OrigemDestinoRepository.GetById(od => od.PassoOrigemId == origemId && od.PassoDestinoId == destinoId);
+            var origemDestino = await _uow.OrigemDestinoRepository.GetById(od => od.PassoOrigemId == origemId && od.PassoDestinoId == destinoId);
 
             if (origemDestino == null)
             {
@@ -89,7 +89,7 @@ public class OrigemDestinoController : ControllerBase
     }
 
     [HttpPost]
-    public ActionResult Post(OrigemDestinoDTO origemDestinoDTO)
+    public async Task<ActionResult> Post(OrigemDestinoDTO origemDestinoDTO)
     {
         try
         {
@@ -101,7 +101,7 @@ public class OrigemDestinoController : ControllerBase
             var origemDestino = _mapper.Map<OrigemDestino>(origemDestinoDTO);
 
             _uow.OrigemDestinoRepository.Add(origemDestino);
-            _uow.Commit();
+            await _uow.Commit();
 
             var origemDestinoDTORetorno = _mapper.Map<OrigemDestinoDTO>(origemDestino);
 
@@ -114,11 +114,11 @@ public class OrigemDestinoController : ControllerBase
     }
 
     [HttpDelete]
-    public ActionResult Delete(int origemId, int destinoId)
+    public async Task<ActionResult> Delete(int origemId, int destinoId)
     {
         try
         {
-            var origemDestino = _uow.OrigemDestinoRepository.GetById(od => od.PassoOrigemId == origemId && od.PassoDestinoId == destinoId);
+            var origemDestino = await _uow.OrigemDestinoRepository.GetById(od => od.PassoOrigemId == origemId && od.PassoDestinoId == destinoId);
 
             if (origemDestino == null)
             {
@@ -126,7 +126,7 @@ public class OrigemDestinoController : ControllerBase
             }
 
             _uow.OrigemDestinoRepository.Delete(origemDestino);
-            _uow.Commit();
+            await _uow.Commit();
 
             var origemDestinoDTO = _mapper.Map<OrigemDestinoDTO>(origemDestino);
 

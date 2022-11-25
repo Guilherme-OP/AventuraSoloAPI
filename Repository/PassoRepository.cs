@@ -10,8 +10,8 @@ public class PassoRepository : Repository<Passo>, IPassoRepository
     {
     }
 
-    public IEnumerable<Passo> GetPassosOrigemDestinos()
+    public async Task<IEnumerable<Passo>> GetPassosOrigemDestinos()
     {
-        return Get().Include(p => p.Origens);
+        return await Get().Include(p => p.Origens).ToListAsync();
     }
 }

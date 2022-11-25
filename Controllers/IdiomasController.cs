@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using SoloAdventureAPI.DTOs;
 using SoloAdventureAPI.Models;
 using SoloAdventureAPI.Repository;
@@ -20,11 +21,11 @@ public class IdiomasController : ControllerBase
     }
 
     [HttpGet("IdiomaAventuras")]
-    public ActionResult<IEnumerable<IdiomaDTO>> GetIdiomasAventuras()
+    public async Task<ActionResult<IEnumerable<IdiomaDTO>>> GetIdiomasAventuras()
     {
         try
         {
-            var idiomas = _uow.IdiomaRepository.GetAventurasPorIdioma().ToList();
+            var idiomas = await _uow.IdiomaRepository.GetAventurasPorIdioma();
 
             if (idiomas is null)
             {
@@ -42,11 +43,11 @@ public class IdiomasController : ControllerBase
     }
 
     [HttpGet]
-    public ActionResult<IEnumerable<IdiomaDTO>> Get()
+    public async Task<ActionResult<IEnumerable<IdiomaDTO>>> Get()
     {
         try
         {
-            var idiomas = _uow.IdiomaRepository.Get().ToList();
+            var idiomas = await _uow.IdiomaRepository.Get().ToListAsync();
 
             if (idiomas is null)
             {
@@ -64,11 +65,11 @@ public class IdiomasController : ControllerBase
     }
 
     [HttpGet("{id:int}", Name = "ObterIdioma")]
-    public ActionResult<IdiomaDTO> Get(int id)
+    public async Task<ActionResult<IdiomaDTO>> Get(int id)
     {
         try
         {
-            var idioma = _uow.IdiomaRepository.GetById(i => i.IdiomaId == id);
+            var idioma = await _uow.IdiomaRepository.GetById(i => i.IdiomaId == id);
 
             if (idioma == null)
             {
@@ -86,7 +87,7 @@ public class IdiomasController : ControllerBase
     }
 
     [HttpPost]
-    public ActionResult Post(IdiomaDTO idiomaDTO)
+    public async Task<ActionResult> Post(IdiomaDTO idiomaDTO)
     {
         try
         {
@@ -98,7 +99,7 @@ public class IdiomasController : ControllerBase
             var idioma = _mapper.Map<Idioma>(idiomaDTO);
 
             _uow.IdiomaRepository.Add(idioma);
-            _uow.Commit();
+            await _uow.Commit();
 
             var idiomaDTORetorno = _mapper.Map<IdiomaDTO>(idioma);
 
@@ -111,7 +112,7 @@ public class IdiomasController : ControllerBase
     }
 
     [HttpPut("{id:int}")]
-    public ActionResult Put(int id, IdiomaDTO idiomaDTO)
+    public async Task<ActionResult> Put(int id, IdiomaDTO idiomaDTO)
     {
         try
         {
@@ -123,7 +124,7 @@ public class IdiomasController : ControllerBase
             var idioma = _mapper.Map<Idioma>(idiomaDTO);
 
             _uow.IdiomaRepository.Update(idioma);
-            _uow.Commit();
+            await _uow.Commit();
 
             var idiomaDTORetorno = _mapper.Map<IdiomaDTO>(idioma);
 
@@ -138,11 +139,11 @@ public class IdiomasController : ControllerBase
     }
 
     [HttpDelete("{id:int}")]
-    public ActionResult Delete(int id)
+    public async Task<ActionResult> Delete(int id)
     {
         try
         {
-            var idioma = _uow.IdiomaRepository.GetById(i => i.IdiomaId == id);
+            var idioma = await _uow.IdiomaRepository.GetById(i => i.IdiomaId == id);
 
             if (idioma == null)
             {
@@ -150,7 +151,7 @@ public class IdiomasController : ControllerBase
             }
 
             _uow.IdiomaRepository.Delete(idioma);
-            _uow.Commit();
+            await _uow.Commit();
 
             var idiomaDTO = _mapper.Map<IdiomaDTO>(idioma);
 

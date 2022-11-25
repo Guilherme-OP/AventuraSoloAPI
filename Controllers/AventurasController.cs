@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using SoloAdventureAPI.DTO;
 using SoloAdventureAPI.Models;
 using SoloAdventureAPI.Repository;
@@ -20,11 +21,11 @@ public class AventurasController : ControllerBase
     }
 
     [HttpGet("passos")]
-    public ActionResult<IEnumerable<AventuraDTO>> GetAventurasPassos()
+    public async Task<ActionResult<IEnumerable<AventuraDTO>>> GetAventurasPassos()
     {
         try
         {
-            var aventuras = _uow.AventuraRepository.GetPassosPorAventura().ToList();
+            var aventuras = await _uow.AventuraRepository.GetPassosPorAventura();
 
             if (aventuras is null)
             {
@@ -43,11 +44,11 @@ public class AventurasController : ControllerBase
     }
 
     [HttpGet]
-    public ActionResult<IEnumerable<AventuraDTO>> Get()
+    public async Task<ActionResult<IEnumerable<AventuraDTO>>> Get()
     {
         try
         {
-            var aventuras = _uow.AventuraRepository.Get().ToList();
+            var aventuras = await _uow.AventuraRepository.Get().ToListAsync();
 
             if (aventuras is null)
             {
@@ -65,11 +66,11 @@ public class AventurasController : ControllerBase
     }
 
     [HttpGet("{id:int}", Name = "ObterAventura")]
-    public ActionResult<AventuraDTO> Get(int id)
+    public async Task<ActionResult<AventuraDTO>> Get(int id)
     {
         try
         {
-            var aventura = _uow.AventuraRepository.GetById(a => a.AventuraId == id);
+            var aventura = await _uow.AventuraRepository.GetById(a => a.AventuraId == id);
 
             if (aventura == null)
             {
@@ -89,7 +90,7 @@ public class AventurasController : ControllerBase
     }
 
     [HttpPost]
-    public ActionResult Post(AventuraDTO aventuraDTO)
+    public async Task<ActionResult> Post(AventuraDTO aventuraDTO)
     {
         try
         {
@@ -101,7 +102,7 @@ public class AventurasController : ControllerBase
             var aventura = _mapper.Map<Aventura>(aventuraDTO);
 
             _uow.AventuraRepository.Add(aventura);
-            _uow.Commit();
+            await _uow.Commit();
 
             var aventuraDTORetorno = _mapper.Map<AventuraDTO>(aventura);
 
@@ -114,7 +115,7 @@ public class AventurasController : ControllerBase
     }
 
     [HttpPut("{id:int}")]
-    public ActionResult Put(int id, AventuraDTO aventuraDTO)
+    public async Task<ActionResult> Put(int id, AventuraDTO aventuraDTO)
     {
         try
         {
@@ -126,7 +127,7 @@ public class AventurasController : ControllerBase
             var aventura = _mapper.Map<Aventura>(aventuraDTO);
 
             _uow.AventuraRepository.Update(aventura);
-            _uow.Commit();
+            await _uow.Commit();
 
             var aventuraDTORetorno = _mapper.Map<AventuraDTO>(aventura);
 
@@ -141,11 +142,11 @@ public class AventurasController : ControllerBase
     }
 
     [HttpDelete("{id:int}")]
-    public ActionResult<AventuraDTO> Delete(int id)
+    public async Task<ActionResult<AventuraDTO>> Delete(int id)
     {
         try
         {
-            var aventura = _uow.AventuraRepository.GetById(a => a.AventuraId == id);
+            var aventura = await _uow.AventuraRepository.GetById(a => a.AventuraId == id);
 
             if (aventura == null)
             {
@@ -153,7 +154,7 @@ public class AventurasController : ControllerBase
             }
 
             _uow.AventuraRepository.Delete(aventura);
-            _uow.Commit();
+            await _uow.Commit();
 
             var aventuraDTO = _mapper.Map<AventuraDTO>(aventura);
 

@@ -35,9 +35,9 @@ public class UnitOfWork : IUnitOfWork
         get { return _origemDestinoRepository = _origemDestinoRepository ?? new OrigemDestinoRepository(_context); }
     }
 
-    public void Commit()
+    public async Task Commit()
     {
-        _context.SaveChanges();
+        await _context.SaveChangesAsync();
     }
 
     public void Dispose()

@@ -4,5 +4,5 @@ namespace SoloAdventureAPI.Repository;
 
 public interface IOrigemDestinoRepository : IRepository<OrigemDestino>
 {
-    IEnumerable<OrigemDestino> GetDestinos();
+    Task<IEnumerable<OrigemDestino>> GetDestinos();
 }
